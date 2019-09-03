@@ -31,23 +31,23 @@ public class PalindromeServiceImpl implements IPalindromeService {
         remainingChanges.getAndUpdate(value -> value - mirrorCost);
 
         int uniqueDigitsWith9 = Stream.of(leftImage, rightImage, 9).collect(Collectors.toSet()).size();
-        int remainingCostTo9 = Math.min(uniqueDigitsWith9 - ((uniqueDigitsWith9 + mirrorCost) % 2), 2) - mirrorCost;
+        int costToBe9 = Math.min(uniqueDigitsWith9 - ((uniqueDigitsWith9 + mirrorCost) % 2), 2) - mirrorCost;
 
-        return new Mirror(Math.max(leftImage, rightImage), mirrorCost, remainingCostTo9);
+        return new Mirror(Math.max(leftImage, rightImage), costToBe9);
     }
 
     private static Optional<String> buildHighestPalindrome(String number, List<Mirror> mirrors, AtomicInteger remainingChanges) {
         String leftSide = mirrors.stream()
-                .map(mirror -> remainingChanges.get() - mirror.remainingTo9 < 0
+                .map(mirror -> remainingChanges.get() - mirror.costToBe9 < 0
                         ? String.valueOf(mirror.image)
-                        : updateChangesAndGet9(remainingChanges, mirror.remainingTo9))
+                        : updateChangesAndGet9(remainingChanges, mirror.costToBe9))
                 .collect(Collectors.joining(""));
 
         return Optional.of(buildPalindrome(number, leftSide, remainingChanges.get()));
     }
 
-    private static String updateChangesAndGet9(AtomicInteger remainingChanges, int remainingTo9) {
-        remainingChanges.getAndUpdate(value -> value - remainingTo9);
+    private static String updateChangesAndGet9(AtomicInteger remainingChanges, int costToBe9) {
+        remainingChanges.getAndUpdate(value -> value - costToBe9);
         return "9";
     }
 
@@ -58,13 +58,11 @@ public class PalindromeServiceImpl implements IPalindromeService {
 
     private static class Mirror {
         final int image;
-        final int cost;
-        final int remainingTo9;
+        final int costToBe9;
 
-        public Mirror(int image, int cost, int remainingTo9) {
+        public Mirror(int image, int costToBe9) {
             this.image = image;
-            this.cost = cost;
-            this.remainingTo9 = remainingTo9;
+            this.costToBe9 = costToBe9;
         }
     }
 }
