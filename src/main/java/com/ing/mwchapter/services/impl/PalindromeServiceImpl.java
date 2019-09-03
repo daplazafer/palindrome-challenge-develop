@@ -15,7 +15,7 @@ public class PalindromeServiceImpl implements IPalindromeService {
     public Optional<String> highestValuePalindrome(String number, int maxAllowedChanges) {
         AtomicInteger remainingChanges = new AtomicInteger(maxAllowedChanges);
         List<Integer> costsToBe9 = IntStream.range(0, number.length() / 2).boxed()
-                .map(index -> getRemainingCostTo9(number, index, remainingChanges))
+                .map(index -> remainingCostTo9(number, index, remainingChanges))
                 .collect(Collectors.toList());
 
         return remainingChanges.get() < 0
@@ -23,7 +23,7 @@ public class PalindromeServiceImpl implements IPalindromeService {
                 : Optional.of(buildHighestPalindrome(number, costsToBe9, remainingChanges));
     }
 
-    private static int getRemainingCostTo9(String number, int index, AtomicInteger remainingChanges) {
+    private static int remainingCostTo9(String number, int index, AtomicInteger remainingChanges) {
         int mirrorCost = left(number, index) == right(number, index) ? 0 : 1;
         remainingChanges.getAndUpdate(value -> value - mirrorCost);
 
@@ -41,17 +41,14 @@ public class PalindromeServiceImpl implements IPalindromeService {
                         : updateChangesAndGet9(remainingChanges, costsToBe9.get(index)))
                 .collect(Collectors.joining(""));
 
-        return buildPalindrome(number, leftSide, remainingChanges.get());
+        String middle = number.length() % 2 == 0 ? "" : (remainingChanges.get() > 0 ? "9" : Character.toString(number.charAt(number.length() / 2)));
+
+        return String.join("", leftSide, middle, new StringBuilder(leftSide).reverse().toString());
     }
 
     private static String updateChangesAndGet9(AtomicInteger remainingChanges, int costToBe9) {
         remainingChanges.getAndUpdate(value -> value - costToBe9);
         return "9";
-    }
-
-    private static String buildPalindrome(String number, String leftSide, int remainingChanges) {
-        String middle = number.length() % 2 == 0 ? "" : (remainingChanges > 0 ? "9" : Character.toString(number.charAt(number.length() / 2)));
-        return String.join("", leftSide, middle, new StringBuilder(leftSide).reverse().toString());
     }
 
     private static int left(String number, int index) {
