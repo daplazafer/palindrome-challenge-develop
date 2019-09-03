@@ -15,7 +15,7 @@ public class PalindromeServiceImpl implements IPalindromeService {
     public Optional<String> highestValuePalindrome(String number, int maxAllowedChanges) {
         AtomicInteger remainingChanges = new AtomicInteger(maxAllowedChanges);
         List<Integer> mirrors = IntStream.range(0, number.length() / 2).boxed()
-                .map(index -> getRemainingCostTo9(number, remainingChanges, index))
+                .map(index -> getRemainingCostTo9(number, index, remainingChanges))
                 .collect(Collectors.toList());
 
         return remainingChanges.get() < 0
@@ -23,7 +23,7 @@ public class PalindromeServiceImpl implements IPalindromeService {
                 : buildHighestPalindrome(number, mirrors, remainingChanges);
     }
 
-    private static Integer getRemainingCostTo9(String number, AtomicInteger remainingChanges, int index) {
+    private static Integer getRemainingCostTo9(String number, int index, AtomicInteger remainingChanges) {
         int mirrorCost = left(number, index) == right(number, index) ? 0 : 1;
         remainingChanges.getAndUpdate(value -> value - mirrorCost);
 
