@@ -27,7 +27,9 @@ public class PalindromeServiceImpl implements IPalindromeService {
         int mirrorCost = left(number, index) == right(number, index) ? 0 : 1;
         remainingChanges.getAndUpdate(value -> value - mirrorCost);
 
-        int uniqueDigitsWith9 = Stream.of(left(number, index), right(number, index), 9).collect(Collectors.toSet()).size();
+        int uniqueDigitsWith9 = Stream.of(left(number, index), right(number, index), 9)
+                .collect(Collectors.toSet())
+                .size();
 
         return Math.min(uniqueDigitsWith9 - ((uniqueDigitsWith9 + mirrorCost) % 2), 2) - mirrorCost;
     }
