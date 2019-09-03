@@ -23,7 +23,7 @@ public class PalindromeServiceImpl implements IPalindromeService {
                 : buildHighestPalindrome(number, mirrors, remainingChanges);
     }
 
-    private static Integer getRemainingCostTo9(String number, int index, AtomicInteger remainingChanges) {
+    private static int getRemainingCostTo9(String number, int index, AtomicInteger remainingChanges) {
         int mirrorCost = left(number, index) == right(number, index) ? 0 : 1;
         remainingChanges.getAndUpdate(value -> value - mirrorCost);
 
